@@ -1,36 +1,39 @@
-# CodeAlpha_Trendly
-🛍️ Trendly - Online Store
+# 🛍️ Trendly - Online Store
+
 A modern and elegant ecommerce web application built with Node.js, Express, and MongoDB.
-✨ Features
 
-🔐 User Authentication (Register & Login)
-🛒 Add to Cart & Place Orders
-🔍 Search Products in Real Time
-📂 Filter by Category & Sort Products
-📱 Fully Responsive Design
-🎨 Clean & Minimal Brown/Beige UI Theme
+## ✨ Features
 
-🛠️ Tech Stack
-FrontendBackendDatabaseHTML, CSS, JavaScriptNode.js, Express.jsMongoDB
-🚀 How to Run Locally
-bash# 1. Clone the repository
+- 🔐 User Authentication (Register & Login)
+- 🛒 Add to Cart & Place Orders
+- 🔍 Search Products in Real Time
+- 📂 Filter by Category & Sort Products
+- 📱 Fully Responsive Design
+- 🎨 Clean & Minimal Brown/Beige UI Theme
+
+## 🛠️ Tech Stack
+
+| Frontend | Backend | Database |
+|----------|---------|----------|
+| HTML, CSS, JavaScript | Node.js, Express.js | MongoDB |
+
+## 🚀 How to Run Locally
+
+1. Clone the repository
 git clone https://github.com/harshitaa005/CodeAlpha_Trendly.git
 
-# 2. Go into the project folder
-cd CodeAlpha_Trendly
-
-# 3. Install dependencies
+2. Install dependencies
 npm install
 
-# 4. Start MongoDB (in separate terminal)
+3. Start MongoDB (in separate terminal)
 mongod
 
-# 5. Run the server
+4. Run the server
 node server.js
 
-# 6. Open in browser
-http://localhost:5000
-📂 Project Structure
+5. Open in browser — http://localhost:5000
+
+## 📂 Project Structure
 trendly/
 ├── public/
 │   ├── index.html       # Shop Page
@@ -44,5 +47,7 @@ trendly/
 │   └── orders.js        # Order Routes
 ├── server.js            # Main Server File
 └── package.json
-👩‍💻 Developed By
-Harshita — CodeAlpha Internship Project
+
+## 👩‍💻 Developed By
+
+**Harshita** — CodeAlpha Internship Project

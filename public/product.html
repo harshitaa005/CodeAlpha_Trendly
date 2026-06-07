@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trendly - Product Detail</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body class="shop-page">
+  <nav class="navbar shop-nav">
+    <a href="index.html" style="text-decoration:none;">
+      <svg width="160" height="34" viewBox="0 0 220 44" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 18 Q20 12 26 18" fill="none" stroke="#6E473B" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M10 14 Q20 6 30 14" fill="none" stroke="#A78D78" stroke-width="2" stroke-linecap="round"/>
+        <path d="M6 10 Q20 0 34 10" fill="none" stroke="#BEB5A9" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="20" cy="20" r="3" fill="#6E473B"/>
+        <path d="M4 28 L8 38 L36 38 L32 26 L10 26 Z" fill="#291C0E"/>
+        <path d="M0 24 L4 24 L8 26" fill="none" stroke="#291C0E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="14" cy="40" r="4" fill="#6E473B"/>
+        <circle cx="14" cy="40" r="2" fill="#F5EFE8"/>
+        <circle cx="30" cy="40" r="4" fill="#6E473B"/>
+        <circle cx="30" cy="40" r="2" fill="#F5EFE8"/>
+        <line x1="50" y1="6" x2="50" y2="38" stroke="#E1D4C2" stroke-width="1"/>
+        <text x="62" y="26" font-family="Playfair Display,serif" font-size="22" font-weight="700" fill="#291C0E" letter-spacing="-0.3">Trendly</text>
+        <text x="63" y="38" font-family="DM Sans,sans-serif" font-size="9" font-weight="600" fill="#A78D78" letter-spacing="2">ONLINE STORE</text>
+      </svg>
+    </a>
+    <div class="nav-right">
+      <a href="index.html" class="back-shop">← Back to Shop</a>
+      <a href="cart.html" class="cart-icon">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-badge" id="cartBadge">0</span>
+      </a>
+      <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </nav>
+
+  <div class="product-detail-container" id="productDetail">
+    <div class="loading">Loading product...</div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+    if (!localStorage.getItem('token')) window.location.href = 'auth.html';
+
+    function updateCartBadge() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      document.getElementById('cartBadge').textContent = cart.reduce((s, i) => s + i.quantity, 0);
+    }
+
+    async function loadProduct() {
+      const id = new URLSearchParams(window.location.search).get('id');
+      if (!id) { window.location.href = 'index.html'; return; }
+      try {
+        const res = await fetch(`${API}/products/${id}`);
+        const p = await res.json();
+        document.title = `Trendly - ${p.name}`;
+        document.getElementById('productDetail').innerHTML = `
+          <div class="detail-card">
+            <div class="detail-img">
+              <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/500x400?text=No+Image'"/>
+            </div>
+            <div class="detail-info">
+              <span class="detail-category">${p.category}</span>
+              <h1>${p.name}</h1>
+              <p class="detail-desc">${p.description}</p>
+              <div class="detail-price">₹${p.price.toLocaleString('en-IN')}</div>
+              <div class="stock-info">
+                ${p.stock > 0 ? `<span class="in-stock">✅ ${p.stock} in stock</span>` : `<span class="no-stock">❌ Out of Stock</span>`}
+              </div>
+              <div class="quantity-section">
+                <label>Quantity</label>
+                <div class="qty-control">
+                  <button onclick="changeQty(-1)">−</button>
+                  <span id="qtyDisplay">1</span>
+                  <button onclick="changeQty(1)">+</button>
+                </div>
+              </div>
+              <div class="detail-buttons">
+                <button class="btn-primary" onclick="addToCart('${p._id}','${p.name}',${p.price})" ${p.stock === 0 ? 'disabled' : ''}>
+                  <i class="fas fa-cart-plus"></i> Add to Cart
+                </button>
+                <a href="cart.html" class="btn-outline">
+                  <i class="fas fa-shopping-bag"></i> View Cart
+                </a>
+              </div>
+            </div>
+          </div>`;
+      } catch(e) {
+        document.getElementById('productDetail').innerHTML = '<div class="error-msg">Product not found. <a href="index.html">Go back</a></div>';
+      }
+    }
+
+    let qty = 1;
+    function changeQty(c) { qty = Math.max(1, qty + c); document.getElementById('qtyDisplay').textContent = qty; }
+
+    function addToCart(id, name, price) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const existing = cart.find(i => i.productId === id);
+      if (existing) existing.quantity += qty;
+      else cart.push({ productId: id, name, price, quantity: qty });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartBadge();
+      alert(`✅ ${qty}x "${name}" added to cart!`);
+    }
+
+    function logout() { localStorage.clear(); window.location.href = 'landing.html'; }
+    loadProduct();
+    updateCartBadge();
+  </script>
+</body>
+</html>

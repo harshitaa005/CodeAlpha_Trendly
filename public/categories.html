@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trendly - Categories</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    .categories-page { padding: 100px 2rem 3rem; max-width: 1100px; margin: 0 auto; }
+    .categories-page h1 { font-family: var(--font-main); font-size: 2.2rem; color: var(--brown-dark); margin-bottom: 0.4rem; }
+    .categories-page p { color: var(--brown-light); margin-bottom: 2.5rem; font-size: 0.95rem; }
+    .cat-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
+    .cat-card {
+      background: var(--card-bg);
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--beige-light);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-decoration: none;
+    }
+    .cat-card:hover { transform: translateY(-6px); box-shadow: 0 14px 36px rgba(41,28,14,0.13); border-color: var(--beige-mid); }
+    .cat-img { height: 160px; overflow: hidden; position: relative; }
+    .cat-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.35s ease; }
+    .cat-card:hover .cat-img img { transform: scale(1.08); }
+    .cat-img-overlay { position: absolute; inset: 0; background: rgba(41,28,14,0.18); }
+    .cat-body { padding: 1.2rem; }
+    .cat-name { font-family: var(--font-main); font-size: 1.1rem; font-weight: 700; color: var(--brown-dark); margin-bottom: 0.3rem; }
+    .cat-count { font-size: 0.82rem; color: var(--brown-light); }
+    .cat-arrow { float: right; color: var(--brown-mid); font-size: 1rem; margin-top: -1.4rem; }
+  </style>
+</head>
+<body class="shop-page">
+
+  <nav class="navbar">
+    <a href="landing.html" class="nav-brand">🛍️ Trendly</a>
+    <div class="nav-right">
+      <a href="landing.html" class="back-shop">← Back to Home</a>
+      <a href="auth.html" class="btn-nav">Login / Register</a>
+    </div>
+  </nav>
+
+  <div class="categories-page">
+    <h1>Shop by Category</h1>
+    <p>Find exactly what you're looking for</p>
+
+    <div class="cat-cards">
+
+      <a href="auth.html" class="cat-card">
+        <div class="cat-img">
+          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400" alt="Footwear"
+               onerror="this.src='https://picsum.photos/seed/footwear/400/200'"/>
+          <div class="cat-img-overlay"></div>
+        </div>
+        <div class="cat-body">
+          <div class="cat-name">👟 Footwear</div>
+          <div class="cat-count">Shoes, Sneakers & More</div>
+          <div class="cat-arrow"><i class="fas fa-arrow-right"></i></div>
+        </div>
+      </a>
+
+      <a href="auth.html" class="cat-card">
+        <div class="cat-img">
+          <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400" alt="Electronics"
+               onerror="this.src='https://picsum.photos/seed/electronics/400/200'"/>
+          <div class="cat-img-overlay"></div>
+        </div>
+        <div class="cat-body">
+          <div class="cat-name">📱 Electronics</div>
+          <div class="cat-count">Gadgets, Earbuds & More</div>
+          <div class="cat-arrow"><i class="fas fa-arrow-right"></i></div>
+        </div>
+      </a>
+
+      <a href="auth.html" class="cat-card">
+        <div class="cat-img">
+          <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400" alt="Clothing"
+               onerror="this.src='https://picsum.photos/seed/clothing/400/200'"/>
+          <div class="cat-img-overlay"></div>
+        </div>
+        <div class="cat-body">
+          <div class="cat-name">👕 Clothing</div>
+          <div class="cat-count">T-Shirts, Jackets & More</div>
+          <div class="cat-arrow"><i class="fas fa-arrow-right"></i></div>
+        </div>
+      </a>
+
+      <a href="auth.html" class="cat-card">
+        <div class="cat-img">
+          <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400" alt="Bags"
+               onerror="this.src='https://picsum.photos/seed/bags/400/200'"/>
+          <div class="cat-img-overlay"></div>
+        </div>
+        <div class="cat-body">
+          <div class="cat-name">🎒 Bags</div>
+          <div class="cat-count">Backpacks, Handbags & More</div>
+          <div class="cat-arrow"><i class="fas fa-arrow-right"></i></div>
+        </div>
+      </a>
+
+      <a href="auth.html" class="cat-card">
+        <div class="cat-img">
+          <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400" alt="Accessories"
+               onerror="this.src='https://picsum.photos/seed/accessories/400/200'"/>
+          <div class="cat-img-overlay"></div>
+        </div>
+        <div class="cat-body">
+          <div class="cat-name">⌚ Accessories</div>
+          <div class="cat-count">Watches, Sunglasses & More</div>
+          <div class="cat-arrow"><i class="fas fa-arrow-right"></i></div>
+        </div>
+      </a>
+
+      <a href="auth.html" class="cat-card">
+        <div class="cat-img">
+          <img src="https://images.unsplash.com/photo-1601925228013-f6951d2b3aa4?w=400" alt="Sports"
+               onerror="this.src='https://picsum.photos/seed/sports/400/200'"/>
+          <div class="cat-img-overlay"></div>
+        </div>
+        <div class="cat-body">
+          <div class="cat-name">🏋️ Sports</div>
+          <div class="cat-count">Yoga, Fitness & More</div>
+          <div class="cat-arrow"><i class="fas fa-arrow-right"></i></div>
+        </div>
+      </a>
+
+      <a href="auth.html" class="cat-card">
+        <div class="cat-img">
+          <img src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400" alt="Kitchen"
+               onerror="this.src='https://picsum.photos/seed/kitchen/400/200'"/>
+          <div class="cat-img-overlay"></div>
+        </div>
+        <div class="cat-body">
+          <div class="cat-name">🍳 Kitchen</div>
+          <div class="cat-count">Mugs, Bottles & More</div>
+          <div class="cat-arrow"><i class="fas fa-arrow-right"></i></div>
+        </div>
+      </a>
+
+      <a href="auth.html" class="cat-card">
+        <div class="cat-img">
+          <img src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=400" alt="Beauty"
+               onerror="this.src='https://picsum.photos/seed/beauty/400/200'"/>
+          <div class="cat-img-overlay"></div>
+        </div>
+        <div class="cat-body">
+          <div class="cat-name">✨ Beauty</div>
+          <div class="cat-count">Perfumes, Skincare & More</div>
+          <div class="cat-arrow"><i class="fas fa-arrow-right"></i></div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+</body>
+</html>

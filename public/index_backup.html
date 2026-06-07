@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopKaro - Products</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body class="shop-page">
+
+  <nav class="navbar shop-nav">
+    <a href="index.html" class="nav-brand">🛍️ ShopKaro</a>
+    <div class="nav-search">
+      <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()"/>
+      <i class="fas fa-search"></i>
+    </div>
+    <div class="nav-right">
+      <span id="welcomeUser" class="welcome-text"></span>
+      <a href="cart.html" class="cart-icon">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-badge" id="cartBadge">0</span>
+      </a>
+      <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </nav>
+
+  <div class="shop-container">
+    <div class="category-bar">
+      <span>Categories:</span>
+      <div class="cat-buttons" id="catButtons">
+        <button class="cat-btn active" onclick="filterCategory('All')">All</button>
+      </div>
+    </div>
+
+    <div class="products-section">
+      <h2 id="sectionTitle">All Products</h2>
+      <div class="products-grid" id="productsGrid">
+        <div class="loading">Loading products...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+    let currentCategory = 'All';
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!token) window.location.href = 'auth.html';
+
+    document.getElementById('welcomeUser').textContent = `Hi, ${user.name || 'User'}!`;
+
+    function updateCartBadge() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      document.getElementById('cartBadge').textContent = cart.reduce((s, i) => s + i.quantity, 0);
+    }
+
+    async function loadCategories() {
+      try {
+        const res = await fetch(`${API}/products/meta/categories`);
+        const categories = await res.json();
+        const container = document.getElementById('catButtons');
+        container.innerHTML = '';
+        categories.forEach(cat => {
+          const btn = document.createElement('button');
+          btn.className = `cat-btn ${cat === 'All' ? 'active' : ''}`;
+          btn.textContent = cat;
+          btn.onclick = () => filterCategory(cat);
+          container.appendChild(btn);
+        });
+      } catch(e) { console.log(e); }
+    }
+
+    async function loadProducts(category = 'All', search = '') {
+      const grid = document.getElementById('productsGrid');
+      grid.innerHTML = '<div class="loading">Loading products...</div>';
+      try {
+        let url = `${API}/products?`;
+        if (category !== 'All') url += `category=${category}&`;
+        if (search) url += `search=${search}`;
+        const res = await fetch(url);
+        const products = await res.json();
+
+        if (products.length === 0) {
+          grid.innerHTML = '<div class="no-products">No products found.</div>';
+          return;
+        }
+
+        grid.innerHTML = products.map(p => `
+          <div class="product-card" onclick="window.location.href='product.html?id=${p._id}'">
+            <div class="product-img-wrapper">
+              <img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'"/>
+              <span class="product-category">${p.category}</span>
+              ${p.stock < 5 && p.stock > 0 ? `<span class="low-stock">Only ${p.stock} left!</span>` : ''}
+              ${p.stock === 0 ? '<span class="out-of-stock">Out of Stock</span>' : ''}
+            </div>
+            <div class="product-info">
+              <h3>${p.name}</h3>
+              <p class="product-desc">${p.description.substring(0, 70)}...</p>
+              <div class="product-footer">
+                <span class="product-price">₹${p.price.toLocaleString('en-IN')}</span>
+                <button class="add-cart-btn" onclick="addToCart(event,'${p._id}','${p.name}',${p.price},'${p.image}')" ${p.stock === 0 ? 'disabled' : ''}>
+                  <i class="fas fa-cart-plus"></i> Add
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      } catch(e) {
+        grid.innerHTML = '<div class="error-msg">Could not load products. Please make sure the server is running.</div>';
+      }
+    }
+
+    function filterCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('sectionTitle').textContent = cat === 'All' ? 'All Products' : `${cat}`;
+      loadProducts(cat, document.getElementById('searchInput').value);
+    }
+
+    let searchTimer;
+    function searchProducts() {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => loadProducts(currentCategory, document.getElementById('searchInput').value), 400);
+    }
+
+    function addToCart(e, id, name, price, image) {
+      e.stopPropagation();
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const existing = cart.find(i => i.productId === id);
+      if (existing) existing.quantity += 1;
+      else cart.push({ productId: id, name, price, image, quantity: 1 });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartBadge();
+      const btn = e.target.closest('button');
+      btn.innerHTML = '<i class="fas fa-check"></i> Added!';
+      btn.style.background = 'var(--success)';
+      setTimeout(() => { btn.innerHTML = '<i class="fas fa-cart-plus"></i> Add'; btn.style.background = ''; }, 1500);
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'landing.html';
+    }
+
+    loadCategories();
+    loadProducts();
+    updateCartBadge();
+  </script>
+</body>
+</html>

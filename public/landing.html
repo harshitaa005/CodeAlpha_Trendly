@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trendly - Your Online Store</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    .lp-navbar {
+      position: fixed; top:0; left:0; right:0; z-index:999;
+      background: rgba(253,250,246,0.97);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #E1D4C2;
+      padding: 18px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .lp-nav-mid { display:flex; gap:8px; }
+    .lp-nav-link { font-size:16px; color:#A78D78; font-weight:500; text-decoration:none; padding:7px 16px; border-radius:50px; transition:all 0.2s; }
+    .lp-nav-link:hover, .lp-nav-link.active { color:#291C0E; background:#E1D4C2; }
+    .lp-nav-btn { background:#6E473B; color:#E1D4C2; padding:10px 24px; border-radius:50px; font-weight:600; font-size:16px; text-decoration:none; transition:all 0.2s; }
+    .lp-nav-btn:hover { background:#291C0E; }
+
+    .lp-hero { position:relative; height:100vh; overflow:hidden; }
+    .lp-slideshow { position:absolute; inset:0; }
+    .lp-slide { position:absolute; inset:0; background-size:cover; background-position:center; opacity:0; transition:opacity 1.2s ease; }
+    .lp-slide.active { opacity:1; }
+    .lp-overlay { position:absolute; inset:0; background:rgba(41,28,14,0.55); }
+    .lp-hero-center { position:relative; z-index:2; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 2rem; }
+    .lp-badge { display:inline-block; background:rgba(225,212,194,0.2); color:#E1D4C2; font-size:12px; padding:5px 16px; border-radius:50px; margin-bottom:1.2rem; border:1px solid rgba(225,212,194,0.3); font-family:'DM Sans',sans-serif; }
+    .lp-title { font-family:'Playfair Display',serif; font-size:4rem; font-weight:800; color:#E1D4C2; line-height:1.1; margin-bottom:1rem; }
+    .lp-title span { color:#A78D78; }
+    .lp-sub { font-size:1.1rem; color:rgba(225,212,194,0.8); margin-bottom:2rem; font-family:'DM Sans',sans-serif; }
+    .lp-cta-btn { background:#E1D4C2; color:#291C0E; padding:0.9rem 2.5rem; border-radius:50px; font-weight:700; font-size:1rem; text-decoration:none; transition:all 0.25s; font-family:'DM Sans',sans-serif; margin-bottom:2rem; }
+    .lp-cta-btn:hover { background:white; transform:translateY(-3px); }
+    .lp-dots { display:flex; gap:8px; }
+    .lp-dot { width:8px; height:8px; border-radius:50%; background:rgba(225,212,194,0.4); cursor:pointer; transition:all 0.3s; }
+    .lp-dot.active { background:#E1D4C2; width:24px; border-radius:4px; }
+
+    .lp-stats-bar { background:#291C0E; display:flex; align-items:center; justify-content:center; gap:0; }
+    .lp-stat { padding:1.2rem 2.5rem; text-align:center; }
+    .lp-stat strong { display:block; font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:700; color:#A78D78; }
+    .lp-stat span { font-size:0.7rem; color:rgba(225,212,194,0.5); letter-spacing:1.5px; font-family:'DM Sans',sans-serif; }
+    .lp-stat-divider { width:1px; height:40px; background:rgba(225,212,194,0.15); }
+  </style>
+</head>
+<body class="landing-page">
+
+  <!-- NAVBAR -->
+  <nav class="lp-navbar">
+    <!-- Logo -->
+    <a href="landing.html" style="text-decoration:none;">
+      <svg width="230" height="50" viewBox="0 0 220 44" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 18 Q20 12 26 18" fill="none" stroke="#6E473B" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M10 14 Q20 6 30 14" fill="none" stroke="#A78D78" stroke-width="2" stroke-linecap="round"/>
+        <path d="M6 10 Q20 0 34 10" fill="none" stroke="#BEB5A9" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="20" cy="20" r="3" fill="#6E473B"/>
+        <path d="M4 28 L8 38 L36 38 L32 26 L10 26 Z" fill="#291C0E"/>
+        <path d="M0 24 L4 24 L8 26" fill="none" stroke="#291C0E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="14" cy="40" r="4" fill="#6E473B"/>
+        <circle cx="14" cy="40" r="2" fill="#F5EFE8"/>
+        <circle cx="30" cy="40" r="4" fill="#6E473B"/>
+        <circle cx="30" cy="40" r="2" fill="#F5EFE8"/>
+        <line x1="50" y1="6" x2="50" y2="38" stroke="#E1D4C2" stroke-width="1"/>
+        <text x="62" y="26" font-family="Playfair Display,serif" font-size="22" font-weight="700" fill="#291C0E" letter-spacing="-0.3">Trendly</text>
+        <text x="63" y="38" font-family="DM Sans,sans-serif" font-size="9" font-weight="600" fill="#A78D78" letter-spacing="2">ONLINE STORE</text>
+      </svg>
+    </a>
+
+    <!-- Nav links -->
+    <div class="lp-nav-mid">
+      <a href="#" class="lp-nav-link active">Home</a>
+      <a href="#features" class="lp-nav-link">Features</a>
+      <a href="categories.html" class="lp-nav-link">Categories</a>
+    </div>
+
+    <a href="auth.html" class="lp-nav-btn">Login / Register</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="lp-hero">
+    <div class="lp-slideshow">
+      <div class="lp-slide active" style="background-image:url('IMAGE1.jpeg')"></div>
+      <div class="lp-slide" style="background-image:url('IMAGE2.jpeg')"></div>
+      <div class="lp-slide" style="background-image:url('IMAGE3.jpeg')"></div>
+      <div class="lp-slide" style="background-image:url('IMAGE4.jpeg')"></div>
+    </div>
+    <div class="lp-overlay"></div>
+    <div class="lp-hero-center">
+      <div class="lp-badge">✨ New Arrivals Available</div>
+      <h1 class="lp-title">Your<br/><span>Online Store</span></h1>
+      <p class="lp-sub">Best products, best prices — everything in one place.</p>
+      <a href="auth.html" class="lp-cta-btn">Start Shopping</a>
+      <div class="lp-dots">
+        <span class="lp-dot active"></span>
+        <span class="lp-dot"></span>
+        <span class="lp-dot"></span>
+        <span class="lp-dot"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="lp-stats-bar">
+    <div class="lp-stat"><strong>500+</strong><span>PRODUCTS</span></div>
+    <div class="lp-stat-divider"></div>
+    <div class="lp-stat"><strong>1000+</strong><span>CUSTOMERS</span></div>
+    <div class="lp-stat-divider"></div>
+    <div class="lp-stat"><strong>Free</strong><span>DELIVERY</span></div>
+    <div class="lp-stat-divider"></div>
+    <div class="lp-stat"><strong>7 Day</strong><span>RETURNS</span></div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <h2>Why Choose Trendly?</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-icon">🚚</span>
+        <h3>Fast Delivery</h3>
+        <p>Order today and receive it within 2–3 days</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">💰</span>
+        <h3>Best Prices</h3>
+        <p>Market-beating prices with no compromise on quality</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🔒</span>
+        <h3>Secure Payments</h3>
+        <p>Your data and payments are completely safe</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">↩️</span>
+        <h3>Easy Returns</h3>
+        <p>Return within 7 days, no questions asked</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="categories-preview" id="categories">
+    <h2>Popular Categories</h2>
+    <div class="cat-grid">
+      <a href="auth.html" class="cat-item">👟 Footwear</a>
+      <a href="auth.html" class="cat-item">📱 Electronics</a>
+      <a href="auth.html" class="cat-item">👕 Clothing</a>
+      <a href="auth.html" class="cat-item">🎒 Bags</a>
+      <a href="auth.html" class="cat-item">⌚ Accessories</a>
+      <a href="auth.html" class="cat-item">🏋️ Sports</a>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>Ready to Shop?</h2>
+    <p>Create your free account and start shopping today!</p>
+    <a href="auth.html" class="btn-primary big-btn">Create Free Account</a>
+  </section>
+
+  <footer class="footer">
+    <p>Made with ❤️ by a Student &nbsp;|&nbsp; Trendly © 2024</p>
+  </footer>
+
+  <script>
+    const slides = document.querySelectorAll('.lp-slide');
+    const dots = document.querySelectorAll('.lp-dot');
+    let current = 0;
+    setInterval(() => {
+      slides[current].classList.remove('active');
+      dots[current].classList.remove('active');
+      current = (current + 1) % slides.length;
+      slides[current].classList.add('active');
+      dots[current].classList.add('active');
+    }, 4000);
+  </script>
+</body>
+</html>

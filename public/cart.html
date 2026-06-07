@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trendly - My Cart</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body class="shop-page">
+  <nav class="navbar shop-nav">
+    <a href="index.html" style="text-decoration:none;">
+      <svg width="160" height="34" viewBox="0 0 220 44" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 18 Q20 12 26 18" fill="none" stroke="#6E473B" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M10 14 Q20 6 30 14" fill="none" stroke="#A78D78" stroke-width="2" stroke-linecap="round"/>
+        <path d="M6 10 Q20 0 34 10" fill="none" stroke="#BEB5A9" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="20" cy="20" r="3" fill="#6E473B"/>
+        <path d="M4 28 L8 38 L36 38 L32 26 L10 26 Z" fill="#291C0E"/>
+        <path d="M0 24 L4 24 L8 26" fill="none" stroke="#291C0E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="14" cy="40" r="4" fill="#6E473B"/>
+        <circle cx="14" cy="40" r="2" fill="#F5EFE8"/>
+        <circle cx="30" cy="40" r="4" fill="#6E473B"/>
+        <circle cx="30" cy="40" r="2" fill="#F5EFE8"/>
+        <line x1="50" y1="6" x2="50" y2="38" stroke="#E1D4C2" stroke-width="1"/>
+        <text x="62" y="26" font-family="Playfair Display,serif" font-size="22" font-weight="700" fill="#291C0E" letter-spacing="-0.3">Trendly</text>
+        <text x="63" y="38" font-family="DM Sans,sans-serif" font-size="9" font-weight="600" fill="#A78D78" letter-spacing="2">ONLINE STORE</text>
+      </svg>
+    </a>
+    <div class="nav-right">
+      <a href="index.html" class="back-shop">← Continue Shopping</a>
+      <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </nav>
+
+  <div class="cart-container">
+    <h1>🛒 My Cart</h1>
+    <div class="cart-layout">
+      <div class="cart-items" id="cartItems"></div>
+      <div class="cart-sidebar" id="cartSidebar"></div>
+    </div>
+    <div class="order-history">
+      <h2>📦 My Orders</h2>
+      <div id="ordersList">
+        <button class="btn-outline" onclick="loadOrders()">View Order History</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'auth.html';
+
+    function renderCart() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const itemsDiv = document.getElementById('cartItems');
+      const sidebarDiv = document.getElementById('cartSidebar');
+
+      if (cart.length === 0) {
+        itemsDiv.innerHTML = `
+          <div class="empty-cart">
+            <div class="empty-icon">🛒</div>
+            <h3>Your cart is empty!</h3>
+            <p>Add some products to get started</p>
+            <a href="index.html" class="btn-primary">Browse Products</a>
+          </div>`;
+        sidebarDiv.innerHTML = '';
+        return;
+      }
+
+      const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+
+      // Cart items with image
+      itemsDiv.innerHTML = cart.map((item, i) => `
+        <div class="cart-item">
+          <div class="cart-item-img">
+            <img src="${item.image || 'https://via.placeholder.com/80x80?text=?'}" 
+                 alt="${item.name}"
+                 onerror="this.src='https://via.placeholder.com/80x80?text=?'"/>
+          </div>
+          <div class="cart-item-info">
+            <h4>${item.name}</h4>
+            <p>₹${item.price.toLocaleString('en-IN')} per item</p>
+          </div>
+          <div class="cart-item-controls">
+            <button onclick="updateQty(${i},-1)">−</button>
+            <span>${item.quantity}</span>
+            <button onclick="updateQty(${i},1)">+</button>
+          </div>
+          <div class="cart-item-subtotal">₹${(item.price * item.quantity).toLocaleString('en-IN')}</div>
+          <button class="remove-btn" onclick="removeItem(${i})"><i class="fas fa-trash"></i></button>
+        </div>`).join('');
+
+      // Multi-step sidebar
+      sidebarDiv.innerHTML = `
+        <!-- Step Indicator -->
+        <div class="steps-bar">
+          <div class="step active" id="step1dot">
+            <div class="step-circle">1</div>
+            <span>Summary</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step" id="step2dot">
+            <div class="step-circle">2</div>
+            <span>Address</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step" id="step3dot">
+            <div class="step-circle">3</div>
+            <span>Payment</span>
+          </div>
+        </div>
+
+        <!-- STEP 1: Order Summary -->
+        <div id="step1" class="checkout-step">
+          <div class="order-summary">
+            <h3>Order Summary</h3>
+            ${cart.map(item => `
+              <div class="summary-item">
+                <img src="${item.image || 'https://via.placeholder.com/40x40?text=?'}" 
+                     alt="${item.name}"
+                     onerror="this.src='https://via.placeholder.com/40x40?text=?'"/>
+                <span class="summary-item-name">${item.name}</span>
+                <span class="summary-item-qty">×${item.quantity}</span>
+                <span class="summary-item-price">₹${(item.price * item.quantity).toLocaleString('en-IN')}</span>
+              </div>`).join('')}
+            <div class="summary-divider"></div>
+            <div class="summary-row"><span>Delivery:</span><span class="free">FREE</span></div>
+            <div class="summary-total"><span>Total:</span><span>₹${total.toLocaleString('en-IN')}</span></div>
+          </div>
+          <button class="place-order-btn" onclick="goToStep(2)">
+            Next — Delivery Address →
+          </button>
+          <button class="clear-cart-btn" onclick="clearCart()">
+            <i class="fas fa-trash"></i> Clear Cart
+          </button>
+        </div>
+
+        <!-- STEP 2: Delivery Address -->
+        <div id="step2" class="checkout-step hidden">
+          <div class="address-form">
+            <h3>📍 Delivery Address</h3>
+            <input type="text" id="street" placeholder="Street / Area / Locality" required/>
+            <input type="text" id="city" placeholder="City (e.g. Meerut)" required/>
+            <input type="text" id="state" placeholder="State (e.g. Uttar Pradesh)" required/>
+            <input type="text" id="pincode" placeholder="Pincode (e.g. 250001)" required maxlength="6"/>
+          </div>
+          <button class="place-order-btn" onclick="goToStep(3)">
+            Next — Payment Method →
+          </button>
+          <button class="btn-back" onclick="goToStep(1)">← Back</button>
+        </div>
+
+        <!-- STEP 3: Payment -->
+        <div id="step3" class="checkout-step hidden">
+          <div class="address-form">
+            <h3>💳 Payment Method</h3>
+            <label class="payment-option">
+              <input type="radio" name="payment" value="cod" checked/>
+              <span>💵 Cash on Delivery</span>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment" value="upi"/>
+              <span>📱 UPI Payment</span>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment" value="card"/>
+              <span>💳 Credit / Debit Card</span>
+            </label>
+            <div id="upiBox" class="payment-details hidden">
+              <input type="text" id="upiId" placeholder="Enter UPI ID (e.g. name@upi)"/>
+            </div>
+            <div id="cardBox" class="payment-details hidden">
+              <input type="text" id="cardNumber" placeholder="Card Number (16 digits)" maxlength="16"/>
+              <input type="text" id="cardName" placeholder="Name on Card"/>
+              <div style="display:flex; gap:0.5rem">
+                <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5"/>
+                <input type="text" id="cardCvv" placeholder="CVV" maxlength="3"/>
+              </div>
+            </div>
+          </div>
+          <button class="place-order-btn" onclick="placeOrder()">
+            <i class="fas fa-check-circle"></i> Place Order — ₹${total.toLocaleString('en-IN')}
+          </button>
+          <button class="btn-back" onclick="goToStep(2)">← Back</button>
+        </div>
+      `;
+    }
+
+    function goToStep(num) {
+      if (num === 3) {
+        const street  = document.getElementById('street')?.value.trim();
+        const city    = document.getElementById('city')?.value.trim();
+        const state   = document.getElementById('state')?.value.trim();
+        const pincode = document.getElementById('pincode')?.value.trim();
+        if (!street || !city || !state || !pincode)
+          return alert('Please fill in the complete address!');
+        if (pincode.length !== 6)
+          return alert('Pincode must be 6 digits!');
+      }
+      document.querySelectorAll('.checkout-step').forEach(s => s.classList.add('hidden'));
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById(`step${num}`).classList.remove('hidden');
+      document.getElementById(`step${num}dot`).classList.add('active');
+    }
+
+    document.addEventListener('change', function(e) {
+      if (e.target.name === 'payment') {
+        document.getElementById('upiBox').classList.add('hidden');
+        document.getElementById('cardBox').classList.add('hidden');
+        if (e.target.value === 'upi')
+          document.getElementById('upiBox').classList.remove('hidden');
+        if (e.target.value === 'card')
+          document.getElementById('cardBox').classList.remove('hidden');
+      }
+    });
+
+    function updateQty(i, c) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart[i].quantity = Math.max(1, cart[i].quantity + c);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    function removeItem(i) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart.splice(i, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    function clearCart() {
+      if (confirm('Clear your entire cart?')) {
+        localStorage.removeItem('cart');
+        renderCart();
+      }
+    }
+
+    async function placeOrder() {
+      const cart    = JSON.parse(localStorage.getItem('cart') || '[]');
+      const street  = document.getElementById('street')?.value.trim();
+      const city    = document.getElementById('city')?.value.trim();
+      const state   = document.getElementById('state')?.value.trim();
+      const pincode = document.getElementById('pincode')?.value.trim();
+
+      const payment = document.querySelector('input[name="payment"]:checked')?.value;
+      if (!payment) return alert('Please select a payment method!');
+
+      if (payment === 'upi') {
+        const upi = document.getElementById('upiId').value.trim();
+        if (!upi || !upi.includes('@'))
+          return alert('Please enter a valid UPI ID! (e.g. name@upi)');
+      }
+
+      if (payment === 'card') {
+        const num  = document.getElementById('cardNumber').value.trim();
+        const name = document.getElementById('cardName').value.trim();
+        const exp  = document.getElementById('cardExpiry').value.trim();
+        const cvv  = document.getElementById('cardCvv').value.trim();
+        if (num.length !== 16)  return alert('Card number must be 16 digits!');
+        if (!name)              return alert('Please enter name on card!');
+        if (!exp)               return alert('Please enter expiry date!');
+        if (cvv.length !== 3)   return alert('CVV must be 3 digits!');
+      }
+
+      const btn = document.querySelector('#step3 .place-order-btn');
+      btn.disabled = true;
+      btn.textContent = 'Placing order...';
+
+      try {
+        const res = await fetch(`${API}/orders`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ items: cart, shippingAddress: { street, city, state, pincode } })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          localStorage.removeItem('cart');
+          alert(`🎉 Order placed successfully!\n\nOrder ID: ${data.orderId}\nTotal: ₹${data.totalAmount.toLocaleString('en-IN')}\nPayment: ${payment.toUpperCase()}\nStatus: ${data.status}`);
+          renderCart();
+          loadOrders();
+        } else {
+          alert('Error: ' + data.message);
+          btn.disabled = false;
+          btn.textContent = 'Place Order';
+        }
+      } catch {
+        alert('Cannot connect to server!');
+        btn.disabled = false;
+        btn.textContent = 'Place Order';
+      }
+    }
+
+    async function loadOrders() {
+      const div = document.getElementById('ordersList');
+      div.innerHTML = '<div class="loading">Loading orders...</div>';
+      try {
+        const res = await fetch(`${API}/orders/my-orders`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const orders = await res.json();
+        if (orders.length === 0) {
+          div.innerHTML = '<p style="text-align:center;color:var(--brown-light);padding:1rem">No orders yet!</p>';
+          return;
+        }
+        div.innerHTML = orders.map(o => `
+          <div class="order-card">
+            <div class="order-header">
+              <span class="order-id">Order #${o._id.slice(-8).toUpperCase()}</span>
+              <span class="order-status status-${o.status.toLowerCase()}">${o.status}</span>
+            </div>
+            <div class="order-items-list">${o.items.map(i => `${i.name} × ${i.quantity}`).join(', ')}</div>
+            <div class="order-footer">
+              <span>Total: <strong>₹${o.totalAmount.toLocaleString('en-IN')}</strong></span>
+              <span>${new Date(o.createdAt).toLocaleDateString('en-IN')}</span>
+            </div>
+          </div>`).join('');
+      } catch {
+        div.innerHTML = '<div class="error-msg">Could not load orders.</div>';
+      }
+    }
+
+    function logout() { localStorage.clear(); window.location.href = 'landing.html'; }
+
+    renderCart();
+  </script>
+</body>
+</html>

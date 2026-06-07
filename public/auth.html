@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trendly - Login / Register</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body class="auth-page">
+
+  <a href="landing.html" class="back-link">← Go Back</a>
+
+  <div class="auth-container">
+
+    <div class="auth-left">
+      <div class="auth-brand">
+        <!-- Trendly Logo -->
+        <svg width="220" height="54" viewBox="0 0 220 44" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 18 Q20 12 26 18" fill="none" stroke="#A78D78" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M10 14 Q20 6 30 14" fill="none" stroke="#BEB5A9" stroke-width="2" stroke-linecap="round"/>
+          <path d="M6 10 Q20 0 34 10" fill="none" stroke="#E1D4C2" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="3" fill="#A78D78"/>
+          <path d="M4 28 L8 38 L36 38 L32 26 L10 26 Z" fill="#E1D4C2"/>
+          <path d="M0 24 L4 24 L8 26" fill="none" stroke="#E1D4C2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="14" cy="40" r="4" fill="#A78D78"/>
+          <circle cx="14" cy="40" r="2" fill="#6E473B"/>
+          <circle cx="30" cy="40" r="4" fill="#A78D78"/>
+          <circle cx="30" cy="40" r="2" fill="#6E473B"/>
+          <line x1="50" y1="6" x2="50" y2="38" stroke="rgba(225,212,194,0.3)" stroke-width="1"/>
+          <text x="62" y="26" font-family="Playfair Display,serif" font-size="22" font-weight="700" fill="#E1D4C2" letter-spacing="-0.3">Trendly</text>
+          <text x="63" y="38" font-family="DM Sans,sans-serif" font-size="9" font-weight="600" fill="#A78D78" letter-spacing="2">ONLINE STORE</text>
+        </svg>
+        <p>Your favourite online store</p>
+      </div>
+      <div class="auth-perks">
+        <div class="perk"><i class="fas fa-check-circle"></i> Free Account</div>
+        <div class="perk"><i class="fas fa-check-circle"></i> Best Prices</div>
+        <div class="perk"><i class="fas fa-check-circle"></i> Secure Shopping</div>
+        <div class="perk"><i class="fas fa-check-circle"></i> Easy Returns</div>
+      </div>
+    </div>
+
+    <div class="auth-right">
+
+      <div class="auth-tabs">
+        <button class="tab-btn active" id="loginTab" onclick="showTab('login')">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+        <button class="tab-btn" id="registerTab" onclick="showTab('register')">
+          <i class="fas fa-user-plus"></i> Register
+        </button>
+      </div>
+
+      <div id="authMessage" class="auth-message hidden"></div>
+
+      <!-- LOGIN FORM -->
+      <div id="loginForm" class="auth-form">
+        <h2>Welcome Back!</h2>
+        <p class="form-sub">Sign in to your account</p>
+
+        <div class="input-group">
+          <label><i class="fas fa-envelope"></i> Email Address</label>
+          <input type="email" id="loginEmail" placeholder="you@email.com" required/>
+        </div>
+
+        <div class="input-group">
+          <label><i class="fas fa-lock"></i> Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password" required/>
+        </div>
+
+        <button class="submit-btn" onclick="handleLogin()">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+
+        <p class="switch-link">
+          Don't have an account?
+          <a href="#" onclick="showTab('register')">Register here</a>
+        </p>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="registerForm" class="auth-form hidden">
+        <h2>Create Account</h2>
+        <p class="form-sub">Join us — it's completely free!</p>
+
+        <div class="input-group">
+          <label><i class="fas fa-user"></i> Full Name</label>
+          <input type="text" id="regName" placeholder="e.g. Rahul Sharma" required/>
+        </div>
+
+        <div class="input-group">
+          <label><i class="fas fa-envelope"></i> Email Address</label>
+          <input type="email" id="regEmail" placeholder="you@email.com" required/>
+        </div>
+
+        <div class="input-group">
+          <label><i class="fas fa-lock"></i> Password</label>
+          <input type="password" id="regPassword" placeholder="Minimum 6 characters" required/>
+        </div>
+
+        <button class="submit-btn register-btn" onclick="handleRegister()">
+          <i class="fas fa-user-plus"></i> Create Account
+        </button>
+
+        <p class="switch-link">
+          Already have an account?
+          <a href="#" onclick="showTab('login')">Sign in here</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+
+    function showTab(tab) {
+      document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+      document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+      document.getElementById('loginTab').classList.toggle('active', tab === 'login');
+      document.getElementById('registerTab').classList.toggle('active', tab === 'register');
+      hideMessage();
+    }
+
+    function showMessage(msg, type) {
+      const el = document.getElementById('authMessage');
+      el.textContent = msg;
+      el.className = `auth-message ${type}`;
+    }
+
+    function hideMessage() {
+      document.getElementById('authMessage').className = 'auth-message hidden';
+    }
+
+    // ---- LOGIN ----
+    async function handleLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      if (!email || !password) return showMessage('Please fill in email and password!', 'error');
+
+      const btn = document.querySelector('#loginForm .submit-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+
+      try {
+        const res = await fetch(`${API}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          showMessage('Login successful! Redirecting...', 'success');
+          setTimeout(() => window.location.href = 'index.html', 1000);
+        } else {
+          showMessage(data.message || 'Login failed!', 'error');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+        }
+      } catch {
+        showMessage('Cannot connect to server. Is the server running?', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+      }
+    }
+
+    // ---- REGISTER ----
+    async function handleRegister() {
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+      if (!name || !email || !password) return showMessage('Please fill in all fields!', 'error');
+      if (password.length < 6) return showMessage('Password must be at least 6 characters!', 'error');
+
+      const btn = document.querySelector('#registerForm .submit-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+
+      try {
+        const res = await fetch(`${API}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          // Register ke baad login page pe aao
+          showMessage('Account created! Please login now.', 'success');
+          setTimeout(() => {
+            showTab('login');
+            document.getElementById('loginEmail').value = email;
+          }, 1500);
+        } else {
+          showMessage(data.message || 'Registration failed!', 'error');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+        }
+      } catch {
+        showMessage('Cannot connect to server. Is the server running?', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+      }
+    }
+
+    // Enter key support
+    document.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const loginVisible = !document.getElementById('loginForm').classList.contains('hidden');
+        loginVisible ? handleLogin() : handleRegister();
+      }
+    });
+
+    // Already logged in?
+    if (localStorage.getItem('token')) window.location.href = 'index.html';
+  </script>
+</body>
+</html>

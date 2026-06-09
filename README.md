@@ -31,7 +31,6 @@ mongod
 4. Run the server
 node server.js
 
-5. Open in browser — http://localhost:5000
 
 ## 📂 Project Structure
 trendly/

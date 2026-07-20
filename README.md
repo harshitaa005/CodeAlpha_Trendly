@@ -8,6 +8,7 @@ A modern and elegant ecommerce web application built with Node.js, Express, and 
 - 📂 Filter by Category & Sort Products
 - 📱 Fully Responsive Design
 - 🎨 Clean & Minimal Brown/Beige UI Theme
+- Learning pull request
 
 ## 🛠️ Tech Stack
 | Frontend | Backend | Database |
